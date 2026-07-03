@@ -49,7 +49,9 @@ a decision, not made silently.
 ## Spec-authoring lessons
 *Recurring spec/test-authoring mistakes learned from real builds, routed here by `/ship` from `build-deviations.md` so they don't recur. Both the upstream spec author (per `spec-guide.md`) and `/ship` read this section before working. Keep each entry concrete: the mistake, and the rule that prevents it, tagged with the feature it came from.*
 
-- [e.g. "Don't assert the exact JWT algorithm in a test — assert that an expired/forged token is rejected. (auth-1)"]
+- Nonante is offline-first: a design artifact that references any external URL (font CDN, script, image host) is specifying a defect. Name the typefaces; the build self-hosts them. (walking-skeleton-1)
+- Don't pin surfaces the spec never names (a dataset's module path, a route string) in `@frozen` tests — tag the file `@scaffolding` with the behavior noted as frozen, or reach the screen the way a user does. (walking-skeleton-1)
+- A "fails loudly" requirement needs a test that the failure path *can* fire (no `continue-on-error`, no swallowed exit codes) — a green happy path can't distinguish a working alarm from a disconnected one. (walking-skeleton-1)
 
 ## Quality gates
 - All tests pass — and CI runs the same build the deploy runs. If the test runner doesn't type-check/compile (Vitest, esbuild, isolatedModules), CI also runs the production build (`tsc` / `pnpm build` / `mypy` / `go build`).
