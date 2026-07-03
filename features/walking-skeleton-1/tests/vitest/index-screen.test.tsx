@@ -31,6 +31,9 @@ describe('index screen', () => {
     expect(screen.getByText('être')).toBeInTheDocument()
     expect(screen.getByText('avoir')).toBeInTheDocument()
     expect(screen.getByText('to have')).toBeInTheDocument()
+    // The phonetic line must come from the data too — a hardcoded respelling
+    // would render EH-truh here.
+    expect(screen.getByText('ah-VWAHR')).toBeInTheDocument()
   })
 
   it('shows an explicit error state naming the problem for a malformed dataset', () => {

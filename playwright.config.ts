@@ -11,6 +11,14 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:4173',
     trace: 'on-first-retry',
+    launchOptions: {
+      // Claude Code cloud sandboxes pre-install Chromium at a fixed path
+      // (PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 blocks re-fetching); CI installs
+      // browsers matching the pinned @playwright/test version instead.
+      executablePath: process.env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD
+        ? '/opt/pw-browsers/chromium'
+        : undefined,
+    },
   },
   projects: [
     {

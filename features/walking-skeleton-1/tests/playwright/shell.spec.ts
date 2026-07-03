@@ -19,19 +19,27 @@ test('persistent navigation is anchored at the bottom of the viewport', async ({
   expect(box.y).toBeGreaterThan(viewport.height * 0.75)
 })
 
-test('navigation targets are at least 44px tall', async ({ page }) => {
+test('navigation targets are thumb-sized (at least 44px in both dimensions)', async ({
+  page,
+}) => {
   await page.goto('/')
   const nav = page.getByRole('navigation')
   for (const name of [/verbs/i, /drill/i]) {
     const box = (await nav.getByRole('link', { name }).boundingBox())!
     expect(box.height).toBeGreaterThanOrEqual(44)
+    expect(box.width).toBeGreaterThanOrEqual(44)
   }
 })
 
 test('navigation stays anchored on the placeholder screens', async ({
   page,
 }) => {
-  await page.goto('/drill')
+  // Reach the drill placeholder the way a user does — through the nav —
+  // rather than pinning a route path the spec never names.
+  await page.goto('/')
+  await page.getByRole('navigation').getByRole('link', { name: /drill/i }).click()
+  await expect(page.getByRole('heading', { name: /drill/i })).toBeVisible()
+
   const nav = page.getByRole('navigation')
   const viewport = page.viewportSize()!
   const box = (await nav.boundingBox())!

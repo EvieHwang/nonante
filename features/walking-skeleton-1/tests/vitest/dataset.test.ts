@@ -1,6 +1,8 @@
-// @frozen — asserts the shipped dataset's content contract from the spec:
-// exactly être, fully populated per the declaration's Verb data fields, with a
-// pseudo-phonetic respelling for every French surface.
+// @scaffolding — the dataset's module path and format ('@/data/verbs.json')
+// are named provisionally; a typed data module would satisfy the same
+// contract. The asserted content — exactly être, fully populated per the
+// declaration's Verb data fields, a pseudo-phonetic respelling for every
+// French surface — is the spec's requirement 1 and must hold as written.
 import { describe, expect, it } from 'vitest'
 import verbs from '@/data/verbs.json'
 

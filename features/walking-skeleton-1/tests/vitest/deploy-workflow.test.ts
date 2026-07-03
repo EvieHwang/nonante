@@ -58,7 +58,27 @@ describe('deploy workflow', () => {
 
     // The probe retries within a bounded window rather than failing on the
     // first request or waiting forever.
-    const probe = stepText(steps[probeIndex])
-    expect(probe).toMatch(/retry|for\b|attempt/i)
+    const probe = steps[probeIndex] as Step & Record<string, unknown>
+    const probeText = stepText(probe)
+    expect(probeText).toMatch(/retry|attempt/i)
+  })
+
+  it('the probe is capable of failing the job when the app is unhealthy', () => {
+    const steps = allSteps(loadWorkflow())
+    const deployIndex = steps.findIndex((s) =>
+      /flyctl deploy|fly deploy/.test(stepText(s)),
+    )
+    const probe = steps.find(
+      (s, i) => i > deployIndex && /health|probe|curl/i.test(stepText(s)),
+    ) as (Step & Record<string, unknown>) | undefined
+    expect(probe).toBeDefined()
+
+    // A probe that swallows its own failure cannot fail loudly.
+    expect(probe!['continue-on-error']).toBeUndefined()
+    expect(probe!.run ?? '').not.toMatch(/\|\|\s*(true|:|exit 0)/)
+    // curl-based probes must treat HTTP errors as failures.
+    if (/curl/.test(probe!.run ?? '')) {
+      expect(probe!.run).toMatch(/curl[^\n]*(\s-f\b|--fail)/)
+    }
   })
 })
