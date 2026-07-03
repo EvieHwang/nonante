@@ -1,0 +1,18 @@
+[
+  {
+    "infinitive": "être",
+    "meaning": "to be",
+    "phonetic": "EH-truh",
+    "auxiliary": "avoir",
+    "present": [
+      { "person": "je", "form": "suis", "phonetic": "swee" },
+      { "person": "tu", "form": "es", "phonetic": "ay" },
+      { "person": "il/elle", "form": "est", "phonetic": "ay" },
+      { "person": "nous", "form": "sommes", "phonetic": "sum" },
+      { "person": "vous", "form": "êtes", "phonetic": "et" },
+      { "person": "ils/elles", "form": "sont", "phonetic": "sohn" }
+    ],
+    "pastParticiple": { "form": "été", "phonetic": "ay-TAY" },
+    "futureStem": { "form": "ser-", "phonetic": "sair" }
+  }
+]

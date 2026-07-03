@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "scripts": {
     "dev": "vite",
@@ -39,6 +41,7 @@
     "vite": "^6.3.0",
     "vite-plugin-pwa": "^1.0.0",
     "vitest": "^3.2.0",
+    "workbox-window": "^7.4.1",
     "yaml": "^2.8.0"
   }
 }

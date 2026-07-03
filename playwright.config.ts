@@ -1,4 +1,11 @@
+import { existsSync } from 'node:fs'
 import { defineConfig } from '@playwright/test'
+
+// Claude Code cloud sandboxes pre-install Chromium at a fixed path and block
+// re-downloading; CI installs browsers matching the pinned @playwright/test
+// version and takes the default resolution.
+const sandboxChromium = '/opt/pw-browsers/chromium'
+const useSandboxChromium = !process.env.CI && existsSync(sandboxChromium)
 
 // PWA seam tests run against the production build (`vite preview`) because the
 // service worker only exists in a built app, never in the dev server.
@@ -12,12 +19,7 @@ export default defineConfig({
     baseURL: 'http://localhost:4173',
     trace: 'on-first-retry',
     launchOptions: {
-      // Claude Code cloud sandboxes pre-install Chromium at a fixed path
-      // (PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 blocks re-fetching); CI installs
-      // browsers matching the pinned @playwright/test version instead.
-      executablePath: process.env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD
-        ? '/opt/pw-browsers/chromium'
-        : undefined,
+      executablePath: useSandboxChromium ? sandboxChromium : undefined,
     },
   },
   projects: [

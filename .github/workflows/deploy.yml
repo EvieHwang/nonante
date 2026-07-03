@@ -1,0 +1,56 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Unit and component tests
+        run: pnpm test
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+      - name: PWA seam tests (production build via vite preview)
+        run: pnpm test:e2e
+      - name: Production build (type-checked)
+        run: pnpm build
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Post-deploy health probe
+        run: |
+          # The release is done only when the live app answers healthy.
+          # Bounded retry window: 20 attempts x 10s = ~3.5 minutes.
+          attempt=1
+          while [ "$attempt" -le 20 ]; do
+            if curl --fail -sS --max-time 10 https://nonante.fly.dev/healthz; then
+              echo " — healthy (attempt $attempt)"
+              exit 0
+            fi
+            echo "attempt $attempt unhealthy; retrying in 10s"
+            attempt=$((attempt + 1))
+            sleep 10
+          done
+          echo "app never became healthy within the retry window"
+          exit 1

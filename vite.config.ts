@@ -46,6 +46,9 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    // Testing Library's automatic per-test cleanup hooks into the global
+    // afterEach, which only exists with globals on.
+    globals: true,
     setupFiles: ['./vitest.setup.ts'],
     // Feature acceptance suites live beside their specs; src tests stay near code.
     include: [
