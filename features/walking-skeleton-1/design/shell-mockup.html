@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nonante — shell mockup (structural)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Schibsted+Grotesk:wght@400;500&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0F1216;
+    --surface: #1A1F26;
+    --chalk: #E8E4DA;
+    --muted: #8A9099;
+    --brass: #C9A227;
+    --slate: #7A93B8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #060809;
+    color: var(--chalk);
+    font-family: 'Schibsted Grotesk', sans-serif;
+    font-size: 14px;
+    line-height: 1.35;
+    padding: 32px 16px;
+  }
+  .note {
+    max-width: 720px;
+    margin: 0 auto 28px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .note strong { color: var(--chalk); font-weight: 500; }
+  .frames {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+  }
+  .frame {
+    width: 320px;
+    height: 640px;
+    background: var(--ink);
+    border: 1px solid #2A3038;
+    border-radius: 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .frame-label {
+    text-align: center;
+    color: var(--muted);
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 11px;
+    margin-top: 8px;
+  }
+  .screen { flex: 1; padding: 20px 16px 0; overflow: hidden; }
+  .title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+  /* Headword — the signature */
+  .card {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    min-height: 44px;
+  }
+  .headword {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    color: var(--chalk);
+  }
+  .phon {
+    font-family: 'Spline Sans Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .gloss { font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .stub { color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .back {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 12px;
+    font-family: 'Spline Sans Mono', monospace;
+  }
+  .legend { margin-top: 20px; font-size: 12px; color: var(--muted); }
+  .swatch {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: baseline;
+  }
+  .nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    background: var(--surface);
+    border-top: 1px solid #2A3038;
+    padding: 10px 16px 22px; /* bottom pad ~ safe area */
+  }
+  .nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 96px;
+    min-height: 44px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .nav a.active { color: var(--brass); background: rgba(201, 162, 39, 0.08); }
+  .nav a:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<p class="note"><strong>Nonante — structural shell mockup.</strong> Shell and visual system only; placeholder screens are deliberately plain. Screen-level design (grid, drill) belongs to features 3 and 4. Tokens and rationale in <span style="font-family:'Spline Sans Mono',monospace">design-spec.md</span>.</p>
+
+<div class="frames">
+
+  <!-- Screen 1: Verbs (index) -->
+  <div>
+    <div class="frame">
+      <div class="screen">
+        <h1 class="title">Verbs</h1>
+        <div class="card">
+          <div class="headword">être</div>
+          <div class="phon">EH-truh</div>
+          <div class="gloss">to be</div>
+        </div>
+        <p class="legend">
+          <span class="swatch" style="background:var(--brass)"></span>memorized primitive&nbsp;&nbsp;
+          <span class="swatch" style="background:var(--slate)"></span>derived by formula
+        </p>
+      </div>
+      <nav class="nav">
+        <a class="active" href="#">Verbs</a>
+        <a href="#">Drill</a>
+      </nav>
+    </div>
+    <p class="frame-label">1 · index — data-driven headword list</p>
+  </div>
+
+  <!-- Screen 2: Grid placeholder -->
+  <div>
+    <div class="frame">
+      <div class="screen">
+        <p class="back">← Verbs</p>
+        <div class="headword">être</div>
+        <div class="phon">EH-truh</div>
+        <p class="stub">Conjugation grid lives here — feature 3.</p>
+      </div>
+      <nav class="nav">
+        <a class="active" href="#">Verbs</a>
+        <a href="#">Drill</a>
+      </nav>
+    </div>
+    <p class="frame-label">2 · grid placeholder — real title, stub body</p>
+  </div>
+
+  <!-- Screen 3: Drill placeholder -->
+  <div>
+    <div class="frame">
+      <div class="screen">
+        <h1 class="title">Drill</h1>
+        <p class="stub">The drill loop lives here — feature 4.</p>
+      </div>
+      <nav class="nav">
+        <a href="#">Verbs</a>
+        <a class="active" href="#">Drill</a>
+      </nav>
+    </div>
+    <p class="frame-label">3 · drill placeholder</p>
+  </div>
+
+</div>
+
+</body>
+</html>
