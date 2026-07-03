@@ -41,6 +41,13 @@ DerivedData/
 xcuserdata/
 *.xcworkspace/xcuserdata/
 
+# Test artifacts
+playwright-report/
+test-results/
+
+# vite-plugin-pwa dev artifacts
+dev-dist/
+
 # Logs / temp
 *.log
 *.tmp

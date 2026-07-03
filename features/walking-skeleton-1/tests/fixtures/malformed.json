@@ -1,0 +1,10 @@
+[
+  {
+    "infinitive": "être",
+    "meaning": "to be",
+    "phonetic": "EH-truh",
+    "auxiliary": "avoir",
+    "pastParticiple": { "form": "été", "phonetic": "ay-TAY" },
+    "futureStem": { "form": "ser-", "phonetic": "sair" }
+  }
+]

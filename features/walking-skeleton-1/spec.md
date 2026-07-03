@@ -78,3 +78,39 @@ Design artifacts live in `design/` (`design-spec.md`, `shell-mockup.html`). Desi
 ## Handoff
 
 Ready for `/ship`. Feature folder: `features/walking-skeleton-1/`.
+
+## Coverage
+
+Test roots: `tests/vitest/` (Vitest, jsdom) and `tests/playwright/` (Playwright, Chromium, production build). Fixtures in `tests/fixtures/`.
+
+| Requirement / seam | Test(s) | Tag |
+|---|---|---|
+| 1 · Data-driven index — index lists infinitive, meaning, respelling | `vitest/index-screen.test.tsx` › "shows the shipped verb…" | @scaffolding (App surface), behavior frozen |
+| 1 · Dataset contains exactly *être*, fully populated | `vitest/dataset.test.ts` (all four tests) | @scaffolding (module path), content frozen |
+| 1 · Rendering is data-driven (two-verb fixture → two entries) | `vitest/index-screen.test.tsx` › "renders one entry per verb…" | @scaffolding |
+| 2 · Verb → grid placeholder (real title, stub body) | `vitest/navigation.test.tsx` › "tapping a verb opens its grid placeholder…" | @scaffolding |
+| 2 · Drill placeholder reachable from persistent nav | `vitest/navigation.test.tsx` › "reaches the drill placeholder…" + "keeps the navigation present…" | @scaffolding |
+| 2 · One back action returns to index | `vitest/navigation.test.tsx` › "one back action…" | @scaffolding |
+| 2 · Nav anchored at viewport bottom, thumb-sized targets | `playwright/shell.spec.ts` (all three tests) | @frozen |
+| 3 · Valid manifest (name, icons, standalone) | `playwright/pwa.spec.ts` › "serves a valid manifest…" | @frozen |
+| 3 · HTTPS + no browser chrome on launch | Not machine-testable pre-deploy: HTTPS is Fly's TLS termination (verified live in the release watch); standalone launch is the manifest `display` assertion plus the spec's on-device Success check | — |
+| 4 · SW precaches shell + data; offline relaunch renders index | `playwright/pwa.spec.ts` › both offline tests | @frozen |
+| 5 · Actions runs build/tests/deploy on push to main; post-deploy probe fails job if unhealthy | `vitest/deploy-workflow.test.ts` (structural, config-level: trigger, ordering, probe can fail — no `continue-on-error`, no swallowed exit) + live verification of the real run during the release watch. Note: the release watch can only observe the happy path; the "fails loudly" half rests on the structural assertions. | @scaffolding |
+| Edge · Malformed/missing dataset → explicit error naming the problem | `vitest/index-screen.test.tsx` › both error-state tests | @scaffolding |
+| Edge · Unknown route lands on index | `vitest/navigation.test.tsx` › "lands on the index for an unknown route" | @scaffolding |
+| Edge · First-ever visit with no network | No requirement per spec — untested by design | — |
+
+Seam notes: the dataset's shape (the Verb data schema) is exercised by every Vitest suite through the same parse path the app uses; the deploy seam's *execution* is deliberately left to the post-merge release watch rather than mocked.
+
+## Adversarial gate
+
+Run once by a clean-context subagent against the spec and tests (no implementation existed yet). One MEDIUM, three LOW; zero HIGH, so no mid-run pause. Every fix was unambiguous and landed in the tests; nothing carries into the PR's Risks for review.
+
+| # | Severity | Lens | Finding | Disposition |
+|---|----------|------|---------|-------------|
+| 1 | MEDIUM | Coverage | The deploy-probe assertions (`/health\|probe\|curl/` + `/retry\|for\|attempt/`) would pass a probe that cannot fail the job (`\|\| true`, `continue-on-error: true`), and the release watch only ever observes the happy path — so "fails loudly if unhealthy" could ship silently broken. | **Fixed in tests:** added a test asserting the probe step has no `continue-on-error`, no swallowed exit (`\|\| true` / `\|\| exit 0`), and that curl probes use `-f/--fail`; dropped the weak `for\b` regex; Coverage map now names the happy-path limit of the release watch. |
+| 2 | LOW | Integrity | Two @frozen surfaces pinned non-contract internals: the dataset's module path (`@/data/verbs.json`) and the `/drill` route path (via `page.goto('/drill')`), which the spec never names. | **Fixed in tests:** `dataset.test.ts` retagged @scaffolding (module path provisional, content frozen); `shell.spec.ts` now reaches the drill placeholder through the nav instead of a hard-coded route. |
+| 3 | LOW | Coverage | The two-verb test never asserted *avoir*'s phonetic, so an implementation hardcoding the phonetic line ("EH-truh") would pass the whole suite while violating the data-driven clause. | **Fixed in tests:** the two-verb test now asserts `ah-VWAHR`. |
+| 4 | LOW | Coverage | Thumb reachability was asserted as bottom-anchoring plus link *height* only; 10px-wide links would pass yet fail one-thumb use. | **Fixed in tests:** nav links now asserted ≥ 44px in both dimensions. |
+
+Clean lenses: scope drift (nothing touches the declaration's Out of scope), document integrity (tags, wiring, and French all consistent), security (HIGH-only review of the two `Reuses pattern:` seams found nothing at that bar), offline seam (the frozen offline test protects against a non-precached dataset regardless of implementation), WCAG (token palette clears 4.5:1 for the named pairs).

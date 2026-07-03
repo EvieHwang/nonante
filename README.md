@@ -9,3 +9,21 @@ Three surfaces: an index of the ten verbs, a per-verb grid (6 persons × 5 tense
 - `declaration.md` — what this is, why, for whom, shape, and roadmap
 - `constitution.md` — standards, principles, and the build contract
 - Deployed on Fly.io as an offline-capable PWA installed to an iPhone home screen
+
+## Develop
+
+React + TypeScript + Vite + Tailwind. Verb data is static and ships with the app — no backend.
+
+```sh
+pnpm install        # deps
+pnpm dev            # dev server at http://localhost:5173
+pnpm test           # Vitest — data, screens, routing, deploy-workflow contract
+pnpm test:e2e       # Playwright — PWA seams (manifest, offline) against the production build
+pnpm build          # type-check + production bundle
+```
+
+Feature acceptance suites live in `features/*/tests/`; both runners discover them (see `constitution.md` § Testing).
+
+## Deploy
+
+Push to `main` → GitHub Actions runs both suites and the build, then `flyctl deploy` (app `nonante`, config in `fly.toml`, nginx serving `dist/`). The job fails unless a post-deploy probe of `https://nonante.fly.dev/healthz` returns healthy within a bounded retry window.

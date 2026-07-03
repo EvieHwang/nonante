@@ -49,7 +49,9 @@ a decision, not made silently.
 ## Spec-authoring lessons
 *Recurring spec/test-authoring mistakes learned from real builds, routed here by `/ship` from `build-deviations.md` so they don't recur. Both the upstream spec author (per `spec-guide.md`) and `/ship` read this section before working. Keep each entry concrete: the mistake, and the rule that prevents it, tagged with the feature it came from.*
 
-- [e.g. "Don't assert the exact JWT algorithm in a test — assert that an expired/forged token is rejected. (auth-1)"]
+- Nonante is offline-first: a design artifact that references any external URL (font CDN, script, image host) is specifying a defect. Name the typefaces; the build self-hosts them. (walking-skeleton-1)
+- Don't pin surfaces the spec never names (a dataset's module path, a route string) in `@frozen` tests — tag the file `@scaffolding` with the behavior noted as frozen, or reach the screen the way a user does. (walking-skeleton-1)
+- A "fails loudly" requirement needs a test that the failure path *can* fire (no `continue-on-error`, no swallowed exit codes) — a green happy path can't distinguish a working alarm from a disconnected one. (walking-skeleton-1)
 
 ## Quality gates
 - All tests pass — and CI runs the same build the deploy runs. If the test runner doesn't type-check/compile (Vitest, esbuild, isolatedModules), CI also runs the production build (`tsc` / `pnpm build` / `mypy` / `go build`).
@@ -61,9 +63,13 @@ a decision, not made silently.
 ## Testing
 *One block per test runner. A polyglot repo (e.g. a Python API plus a JS/TS frontend) has more than one — list each, because the green bar `/ship` must hit is **every** runner passing. `Test root` records how this runner discovers the per-feature suites under `features/*/tests/` — the one-time wiring `/ship` establishes so feature tests are executable without per-feature path hacks. A single-runner project has just one block. Populated by `/ship` on first use.*
 
-- **Runner:** [name, e.g. pytest]
-  **Run:** `[command]`
-  **Test root:** [how this runner finds feature tests — e.g. a `pytest.ini`/`pyproject` `testpaths`, a Vitest `include` glob, an import alias — or note that feature tests live in `features/*/tests/<runner>/`]
+- **Runner:** Vitest (jsdom + Testing Library) — data, components, routing behavior
+  **Run:** `pnpm test`
+  **Test root:** `vite.config.ts` `test.include` globs `features/*/tests/vitest/**/*.test.{ts,tsx}` (plus `src/**/*.test.{ts,tsx}` for unit tests beside code). The `@` alias resolves to `src/`, so feature tests import app surfaces as `@/...` with no relative-path hacks.
+
+- **Runner:** Playwright (Chromium, iPhone-sized viewport) — PWA seams: manifest, service worker, offline render
+  **Run:** `pnpm test:e2e`
+  **Test root:** `playwright.config.ts` sets `testDir: 'features'` with `testMatch: '**/tests/playwright/**/*.spec.ts'`. Runs against the production build via `vite preview` (the service worker doesn't exist in the dev server), started automatically by the config's `webServer`.
 
 ## Out of scope
 [List what this codebase explicitly does not do. Populated per app.]
