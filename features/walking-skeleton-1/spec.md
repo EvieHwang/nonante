@@ -78,3 +78,26 @@ Design artifacts live in `design/` (`design-spec.md`, `shell-mockup.html`). Desi
 ## Handoff
 
 Ready for `/ship`. Feature folder: `features/walking-skeleton-1/`.
+
+## Coverage
+
+Test roots: `tests/vitest/` (Vitest, jsdom) and `tests/playwright/` (Playwright, Chromium, production build). Fixtures in `tests/fixtures/`.
+
+| Requirement / seam | Test(s) | Tag |
+|---|---|---|
+| 1 · Data-driven index — index lists infinitive, meaning, respelling | `vitest/index-screen.test.tsx` › "shows the shipped verb…" | @scaffolding (App surface), behavior frozen |
+| 1 · Dataset contains exactly *être*, fully populated | `vitest/dataset.test.ts` (all four tests) | @frozen |
+| 1 · Rendering is data-driven (two-verb fixture → two entries) | `vitest/index-screen.test.tsx` › "renders one entry per verb…" | @scaffolding |
+| 2 · Verb → grid placeholder (real title, stub body) | `vitest/navigation.test.tsx` › "tapping a verb opens its grid placeholder…" | @scaffolding |
+| 2 · Drill placeholder reachable from persistent nav | `vitest/navigation.test.tsx` › "reaches the drill placeholder…" + "keeps the navigation present…" | @scaffolding |
+| 2 · One back action returns to index | `vitest/navigation.test.tsx` › "one back action…" | @scaffolding |
+| 2 · Nav anchored at viewport bottom, thumb-sized targets | `playwright/shell.spec.ts` (all three tests) | @frozen |
+| 3 · Valid manifest (name, icons, standalone) | `playwright/pwa.spec.ts` › "serves a valid manifest…" | @frozen |
+| 3 · HTTPS + no browser chrome on launch | Not machine-testable pre-deploy: HTTPS is Fly's TLS termination (verified live in the release watch); standalone launch is the manifest `display` assertion plus the spec's on-device Success check | — |
+| 4 · SW precaches shell + data; offline relaunch renders index | `playwright/pwa.spec.ts` › both offline tests | @frozen |
+| 5 · Actions runs build/tests/deploy on push to main; post-deploy probe fails job if unhealthy | `vitest/deploy-workflow.test.ts` (structural, config-level) + live verification of the real run during the release watch | @scaffolding |
+| Edge · Malformed/missing dataset → explicit error naming the problem | `vitest/index-screen.test.tsx` › both error-state tests | @scaffolding |
+| Edge · Unknown route lands on index | `vitest/navigation.test.tsx` › "lands on the index for an unknown route" | @scaffolding |
+| Edge · First-ever visit with no network | No requirement per spec — untested by design | — |
+
+Seam notes: the dataset's shape (the Verb data schema) is exercised by every Vitest suite through the same parse path the app uses; the deploy seam's *execution* is deliberately left to the post-merge release watch rather than mocked.
