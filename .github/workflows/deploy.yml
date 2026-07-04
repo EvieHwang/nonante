@@ -34,6 +34,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Ensure the Fly app exists
+        # One-time bootstrap, then a no-op: creation fails harmlessly when the
+        # app already exists, and a genuinely missing app makes the deploy
+        # step below fail loudly anyway.
+        run: flyctl apps create nonante --org personal || echo "app already exists (or creation failed; deploy will surface it)"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       - name: Deploy to Fly.io
         run: flyctl deploy --remote-only
         env:
